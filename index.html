@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>我们的菜单 · 每日点餐</title>
+    <style>
+        :root {
+            --primary-50: #eff6ff;
+            --primary-100: #dbeafe;
+            --primary-200: #bfdbfe;
+            --primary-300: #93c5fd;
+            --primary-400: #60a5fa;
+            --primary-500: #3b82f6;
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-300: #fdba74;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --teal-100: #ccfbf1;
+            --teal-200: #99f6e4;
+            --teal-300: #5eead4;
+            --teal-500: #14b8a6;
+            --indigo-100: #e0e7ff;
+            --indigo-200: #c7d2fe;
+            --indigo-300: #a5b4fc;
+            --indigo-500: #6366f1;
+            --green-100: #d1fae5;
+            --green-500: #10b981;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 30%, #ffedd5 100%);
+            min-height: 100vh;
+            padding: 20px 12px 80px;
+            color: var(--gray-900);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-600), var(--orange-500));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-subtitle {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 8px;
+        }
+
+        .sync-status.active {
+            color: var(--green-500);
+        }
+
+        .sync-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            animation: pulse 2s infinite;
+        }
+
+        .sync-status.active .dot {
+            background: var(--green-500);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .share-btn {
+            margin-top: 12px;
+            padding: 10px 16px;
+            border: 1.5px solid var(--primary-500);
+            border-radius: 12px;
+            background: white;
+            color: var(--primary-600);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .share-btn:hover {
+            background: var(--primary-50);
+            transform: translateY(-1px);
+        }
+
+        .random-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            margin-bottom: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .random-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(236, 72, 153, 0.4);
+        }
+
+        .random-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .random-btn.shaking {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .result-banner {
+            display: none;
+            margin-bottom: 24px;
+            padding: 20px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary-200), var(--orange-200));
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .result-banner.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-banner h3 {
+            font-size: 16px;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .result-banner .dish-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-700);
+            margin: 8px 0;
+            animation: popIn 0.4s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-banner .dish-category {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .category {
+            margin-bottom: 24px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .category-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .category-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .category-count {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-left: auto;
+        }
+
+        .category.simple .category-icon {
+            background: var(--green-100);
+            color: var(--green-500);
+        }
+
+        .category.general .category-icon {
+            background: var(--amber-100);
+            color: var(--amber-500);
+        }
+
+        .category.complex .category-icon {
+            background: var(--purple-100);
+            color: var(--purple-500);
+        }
+
+        .category.cold .category-icon {
+            background: var(--teal-100);
+            color: var(--teal-500);
+        }
+
+        .category.frozen .category-icon {
+            background: var(--indigo-100);
+            color: var(--indigo-500);
+        }
+
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .dish-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            position: relative;
+            user-select: none;
+        }
+
+        .dish-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dish-item:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        .dish-item.selected {
+            border-color: var(--primary-500);
+            background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+        }
+
+        .dish-item.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-500);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .dish-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--gray-900);
+            line-height: 1.4;
+        }
+
+        .selected-dishes {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid var(--gray-200);
+            z-index: 100;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .selected-dishes.hidden {
+            display: none;
+        }
+
+        .selected-dishes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .selected-dishes-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .clear-btn {
+            font-size: 14px;
+            color: var(--gray-500);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .clear-btn:hover {
+            color: var(--primary-600);
+        }
+
+        .selected-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .selected-tag {
+            background: linear-gradient(135deg, var(--primary-200), var(--orange-200));
+            color: var(--primary-700);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .selected-tag .remove {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-500);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            line-height: 1;
+            transition: all 0.2s;
+        }
+
+        .selected-tag .remove:hover {
+            background: var(--primary-600);
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .dishes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .dish-item {
+                padding: 14px 10px;
+            }
+
+            .dish-name {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <span>💕</span>
+                <span>我们的菜单</span>
+                <span>💕</span>
+            </div>
+            <div class="header-subtitle">今天想吃什么？</div>
+            <div class="sync-status" id="syncStatus">
+                <span class="dot"></span>
+                <span id="syncText">实时同步中...</span>
+            </div>
+            <button class="share-btn" id="shareBtn">📋 复制分享链接</button>
+        </header>
+
+        <button class="random-btn" id="randomBtn">
+            <span>🎲</span>
+            <span>今天吃什么？</span>
+        </button>
+
+        <div class="result-banner" id="resultBanner">
+            <h3>推荐给你</h3>
+            <div class="dish-name" id="randomDishName"></div>
+            <div class="dish-category" id="randomDishCategory"></div>
+        </div>
+
+        <div class="category simple" data-category="simple">
+            <div class="category-header">
+                <div class="category-icon">🥗</div>
+                <div class="category-title">简易</div>
+                <div class="category-count" id="count-simple">19</div>
+            </div>
+            <div class="dishes-grid" id="dishes-simple"></div>
+        </div>
+
+        <div class="category general" data-category="general">
+            <div class="category-header">
+                <div class="category-icon">🍲</div>
+                <div class="category-title">一般</div>
+                <div class="category-count" id="count-general">7</div>
+            </div>
+            <div class="dishes-grid" id="dishes-general"></div>
+        </div>
+
+        <div class="category complex" data-category="complex">
+            <div class="category-header">
+                <div class="category-icon">🍳</div>
+                <div class="category-title">复杂</div>
+                <div class="category-count" id="count-complex">4</div>
+            </div>
+            <div class="dishes-grid" id="dishes-complex"></div>
+        </div>
+
+        <div class="category cold" data-category="cold">
+            <div class="category-header">
+                <div class="category-icon">🥙</div>
+                <div class="category-title">凉菜</div>
+                <div class="category-count" id="count-cold">2</div>
+            </div>
+            <div class="dishes-grid" id="dishes-cold"></div>
+        </div>
+
+        <div class="category frozen" data-category="frozen">
+            <div class="category-header">
+                <div class="category-icon">🥟</div>
+                <div class="category-title">速冻食品</div>
+                <div class="category-count" id="count-frozen">2</div>
+            </div>
+            <div class="dishes-grid" id="dishes-frozen"></div>
+        </div>
+    </div>
+
+    <div class="selected-dishes hidden" id="selectedDishes">
+        <div class="selected-dishes-header">
+            <div class="selected-dishes-title">已选菜品 (<span id="selectedCount">0</span>)</div>
+            <button class="clear-btn" id="clearBtn">清空</button>
+        </div>
+        <div class="selected-list" id="selectedList"></div>
+    </div>
+
+    <script>
+        const menuData = {
+            simple: [
+                '香菇油菜', '烧香菇', '孜然蘑菇', '麻辣豆腐', '尖椒干豆腐',
+                '酸辣藕丁', '孜然土豆片', '酸辣土豆丝', '尖椒香干', '尖椒豆皮豆肠',
+                '番茄鸡蛋', '尖椒鸡蛋', '黄瓜鸡蛋', '鸡蛋糕', '炒生菜',
+                '土豆豆腐白玉菇汤', '豆皮金针菇', '炒豆芽', '炒杏鲍菇'
+            ],
+            general: [
+                '香煎豆腐', '千张海带丝', '麻辣藕片', '干煸豆角', '苦瓜炒蛋',
+                '尖椒千叶豆腐', '凉拌杏鲍菇'
+            ],
+            complex: [
+                '蒜蓉香菇', '狼牙土豆', '蒜蓉菜心', '西红柿疙瘩汤'
+            ],
+            cold: [
+                '生菜番茄沙拉', '炒花生米'
+            ],
+            frozen: [
+                '饺子', '煎饺子'
+            ]
+        };
+
+        const categoryNames = {
+            simple: '简易',
+            general: '一般',
+            complex: '复杂',
+            cold: '凉菜',
+            frozen: '速冻食品'
+        };
+
+        let selectedDishes = new Set();
+        let broadcastChannel = null;
+        let isUpdatingFromSync = false;
+
+        // 初始化 BroadcastChannel 用于实时同步
+        function initBroadcastChannel() {
+            if (typeof BroadcastChannel !== 'undefined') {
+                broadcastChannel = new BroadcastChannel('menu-sync');
+                broadcastChannel.onmessage = (event) => {
+                    if (event.data.type === 'dishes-updated' && !isUpdatingFromSync) {
+                        isUpdatingFromSync = true;
+                        const dishes = new Set(event.data.dishes);
+                        selectedDishes = dishes;
+                        updateUI();
+                        setTimeout(() => {
+                            isUpdatingFromSync = false;
+                        }, 100);
+                    }
+                };
+                updateSyncStatus(true);
+            } else {
+                updateSyncStatus(false);
+            }
+        }
+
+        // 更新同步状态显示
+        function updateSyncStatus(active) {
+            const status = document.getElementById('syncStatus');
+            const text = document.getElementById('syncText');
+            if (active) {
+                status.classList.add('active');
+                text.textContent = '实时同步已开启';
+            } else {
+                status.classList.remove('active');
+                text.textContent = '同步未开启（请使用现代浏览器）';
+            }
+        }
+
+        // 从本地存储加载已选菜品
+        function loadSelectedDishes() {
+            // 先检查 URL 参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedDishes = urlParams.get('dishes');
+            if (sharedDishes) {
+                try {
+                    const dishes = JSON.parse(decodeURIComponent(sharedDishes));
+                    selectedDishes = new Set(dishes);
+                    // 清除 URL 参数
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    return;
+                } catch (e) {
+                    console.error('解析分享链接失败', e);
+                }
+            }
+
+            // 从本地存储加载
+            const saved = localStorage.getItem('selectedDishes');
+            if (saved) {
+                try {
+                    const dishes = JSON.parse(saved);
+                    selectedDishes = new Set(dishes);
+                } catch (e) {
+                    console.error('加载已选菜品失败', e);
+                }
+            }
+        }
+
+        // 保存已选菜品到本地存储并广播
+        function saveSelectedDishes() {
+            const dishesArray = Array.from(selectedDishes);
+            localStorage.setItem('selectedDishes', JSON.stringify(dishesArray));
+            
+            // 通过 BroadcastChannel 广播更新
+            if (broadcastChannel && !isUpdatingFromSync) {
+                broadcastChannel.postMessage({
+                    type: 'dishes-updated',
+                    dishes: dishesArray
+                });
+            }
+        }
+
+        // 生成分享链接
+        function generateShareLink() {
+            const dishesArray = Array.from(selectedDishes);
+            if (dishesArray.length === 0) {
+                alert('请先选择一些菜品再分享！');
+                return;
+            }
+            
+            const dishesParam = encodeURIComponent(JSON.stringify(dishesArray));
+            const shareUrl = `${window.location.origin}${window.location.pathname}?dishes=${dishesParam}`;
+            
+            // 复制到剪贴板
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    const btn = document.getElementById('shareBtn');
+                    const originalText = btn.textContent;
+                    btn.textContent = '✓ 已复制！';
+                    btn.style.background = 'var(--green-100)';
+                    btn.style.borderColor = 'var(--green-500)';
+                    btn.style.color = 'var(--green-500)';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = 'white';
+                        btn.style.borderColor = 'var(--primary-500)';
+                        btn.style.color = 'var(--primary-600)';
+                    }, 2000);
+                }).catch(() => {
+                    fallbackCopy(shareUrl);
+                });
+            } else {
+                fallbackCopy(shareUrl);
+            }
+        }
+
+        // 备用复制方法
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('链接已复制到剪贴板！\n\n' + text);
+            } catch (e) {
+                prompt('请手动复制以下链接：', text);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function renderDishes() {
+            Object.keys(menuData).forEach(category => {
+                const container = document.getElementById(`dishes-${category}`);
+                container.innerHTML = '';
+                
+                menuData[category].forEach(dish => {
+                    const dishItem = document.createElement('div');
+                    dishItem.className = 'dish-item';
+                    dishItem.dataset.dish = dish;
+                    dishItem.dataset.category = category;
+                    
+                    if (selectedDishes.has(dish)) {
+                        dishItem.classList.add('selected');
+                    }
+                    
+                    dishItem.innerHTML = `<div class="dish-name">${dish}</div>`;
+                    
+                    dishItem.addEventListener('click', () => toggleDish(dish, category));
+                    container.appendChild(dishItem);
+                });
+            });
+        }
+
+        function toggleDish(dish, category) {
+            if (selectedDishes.has(dish)) {
+                selectedDishes.delete(dish);
+            } else {
+                selectedDishes.add(dish);
+            }
+            
+            saveSelectedDishes();
+            updateUI();
+        }
+
+        function updateUI() {
+            renderDishes();
+            updateSelectedList();
+            
+            const selectedDishesBar = document.getElementById('selectedDishes');
+            if (selectedDishes.size > 0) {
+                selectedDishesBar.classList.remove('hidden');
+            } else {
+                selectedDishesBar.classList.add('hidden');
+            }
+        }
+
+        function updateSelectedList() {
+            const selectedList = document.getElementById('selectedList');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            selectedCount.textContent = selectedDishes.size;
+            
+            selectedList.innerHTML = '';
+            selectedDishes.forEach(dish => {
+                const tag = document.createElement('div');
+                tag.className = 'selected-tag';
+                tag.innerHTML = `
+                    <span>${dish}</span>
+                    <span class="remove" data-dish="${dish}">×</span>
+                `;
+                tag.querySelector('.remove').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedDishes.delete(dish);
+                    updateUI();
+                });
+                selectedList.appendChild(tag);
+            });
+        }
+
+        function getRandomDish() {
+            const allDishes = [];
+            Object.keys(menuData).forEach(category => {
+                menuData[category].forEach(dish => {
+                    allDishes.push({ name: dish, category: category });
+                });
+            });
+            
+            if (allDishes.length === 0) return null;
+            
+            const randomIndex = Math.floor(Math.random() * allDishes.length);
+            return allDishes[randomIndex];
+        }
+
+        document.getElementById('randomBtn').addEventListener('click', () => {
+            const btn = document.getElementById('randomBtn');
+            btn.classList.add('shaking');
+            
+            setTimeout(() => {
+                btn.classList.remove('shaking');
+                const dish = getRandomDish();
+                if (dish) {
+                    const banner = document.getElementById('resultBanner');
+                    document.getElementById('randomDishName').textContent = dish.name;
+                    document.getElementById('randomDishCategory').textContent = categoryNames[dish.category];
+                    banner.classList.add('show');
+                    
+                    setTimeout(() => {
+                        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
+                }
+            }, 500);
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            if (selectedDishes.size > 0 && confirm('确定要清空所有已选菜品吗？')) {
+                selectedDishes.clear();
+                saveSelectedDishes();
+                updateUI();
+            }
+        });
+
+        // 初始化
+        initBroadcastChannel();
+        loadSelectedDishes();
+        renderDishes();
+        updateUI();
+
+        // 分享按钮事件
+        document.getElementById('shareBtn').addEventListener('click', generateShareLink);
+
+        // 监听 storage 事件（用于同源不同标签页同步）
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'selectedDishes' && e.newValue) {
+                try {
+                    const dishes = JSON.parse(e.newValue);
+                    selectedDishes = new Set(dishes);
+                    updateUI();
+                } catch (err) {
+                    console.error('同步失败', err);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
